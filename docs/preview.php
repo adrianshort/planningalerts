@@ -33,41 +33,32 @@ class preview_page {
             $this->warnings .= "No area size specified ";
         }
 
-        if ($this->warnings == ""){
-                        
-            $url = "http://ernestmarples.com/?p=sw98jx&f=csv";
-            $result = file_get_contents($url);
-            $result = split(",", $result);
-            if(count($result) != 2){
-                trigger_error("No lat/long could be found");
-            }
-            $lat = $result[0];
-            $lng = $result[1];
+        if ($this->warnings == ""){                      
 
-            //Get OS ref from postcode
-            $xy = postcode_to_location($_GET['postcode']);
+           //Get OS ref from postcode
+           $xy = postcode_to_location($_GET['postcode']);
 
-            //Get the centroid long  / lat (google maps doesnt handle grid refs)
-            //$os_ref = new OSRef($xy[0], $xy[1]);
-            //$long_lat = $os_ref->toLatLng();
-            $this->center_long = $lng; //$long_lat->lng;
-            $this->center_lat = $lat; //$long_lat->lat;            
-            
-            //get long lat for the bounding box (OS grid refs are in meters in case you were wondering)
-            
-            //bottom left
-            $area_size_meters = alert_size_to_meters($_GET['area_size']);
-            $os_ref = new OSRef($xy[0] - $area_size_meters, $xy[1] - $area_size_meters);
-            $long_lat = $os_ref->toLatLng();
-            $this->bottom_left_long = $long_lat->lng;
-            $this->bottom_left_lat = $long_lat->lat;            
-            
-            //top right
-            $area_size_meters = alert_size_to_meters($_GET['area_size']);
-            $os_ref = new OSRef($xy[0] + $area_size_meters, $xy[1] + $area_size_meters);
-            $long_lat = $os_ref->toLatLng();
-            $this->top_right_long = $long_lat->lng;
-            $this->top_right_lat = $long_lat->lat;
+           //Get the centroid long  / lat (google maps doesnt handle grid refs)
+           $os_ref = new OSRef($xy[0], $xy[1]);
+           $long_lat = $os_ref->toLatLng();
+           $this->center_long = $long_lat->lng;
+           $this->center_lat = $long_lat->lat;            
+       
+           //get long lat for the bounding box (OS grid refs are in meters in case you were wondering)
+       
+           //bottom left
+           $area_size_meters = alert_size_to_meters($_GET['area_size']);
+           $os_ref = new OSRef($xy[0] - $area_size_meters, $xy[1] - $area_size_meters);
+           $long_lat = $os_ref->toLatLng();
+           $this->bottom_left_long = $long_lat->lng;
+           $this->bottom_left_lat = $long_lat->lat;            
+       
+           //top right
+           $area_size_meters = alert_size_to_meters($_GET['area_size']);
+           $os_ref = new OSRef($xy[0] + $area_size_meters, $xy[1] + $area_size_meters);
+           $long_lat = $os_ref->toLatLng();
+           $this->top_right_long = $long_lat->lng;
+           $this->top_right_lat = $long_lat->lat;
             
         }
 

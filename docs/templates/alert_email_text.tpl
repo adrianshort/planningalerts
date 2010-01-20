@@ -1,3 +1,12 @@
+---------------------------
+
+
+Because of ongoing difficulty sourcing accurate postcode data, some planning applications may be missing or slightly out when viewed on a map. To help resolve this you may with to make a short submission to the government's consultation process asking for postcode data to be made freely available: http://www.communities.gov.uk/corporate/contact?consultation=true
+
+
+---------------------------
+
+
 {foreach name="applications" from="$applications" item="application"}
 {$application->address|upper} {$application->postcode|upper} ({$application->council_reference|upper})
 

@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.16, created on 2009-10-05 14:04:40
+<?php /* Smarty version 2.6.16, created on 2010-01-20 12:08:45
          compiled from header.tpl */ ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

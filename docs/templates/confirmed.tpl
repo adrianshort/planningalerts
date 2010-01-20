@@ -7,12 +7,9 @@
             <h3>Thanks, your alert has been activated</h3>
             <div class="ad">
                 
-                <h4>Find out even more about your local area using StreetWire</h4>
+                <h4>Help make the 20010 Election the most transparent ever</h4>
                 <p>
-                    StreetWire is like PlanningAlerts for everything. Including licensing applications, 
-                    local news, crime and missing animals.
-                    <br/>
-                    <a href="http://www.streetwire.org">Visit StreetWire</a>
+                    <a href="http://www.democracyclub.org.uk">Join democracy club!</a>
                 </p>
                 
             </div>

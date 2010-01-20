@@ -45,6 +45,7 @@
 <div id="divSiteUpdates">
     <h4>Recent site updates</h4>
     <ul class="nobullets">
+        <li><em>January 2010</em>Site functioning again with reduced postcode accuracy.<a href="http://www.communities.gov.uk/corporate/contact?consultation=true"> Please consider submitting feedback to the government consultation</a></li>
         <li><em>May 2008</em>Now has 250 Local authorities covered</li>        
         <li><em>July 2007</em>Shortlisted for New Statesman New Media Award</li>        
         <li><em>July 2007</em>Added 21 councils inc. Lewisham, New Forest National Park and Edinburgh </li>        

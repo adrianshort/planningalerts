@@ -1,8 +1,6 @@
 ---------------------------
 
-
-Because of ongoing difficulty sourcing accurate postcode data, some planning applications may be missing or slightly out when viewed on a map. To help resolve this you may wish to make a short submission to the government's consultation process asking for postcode data to be made freely available: http://www.communities.gov.uk/corporate/contact?consultation=true
-
+Election 2010: Why not take a look at the election quiz from our friends at <a href="http://www.theyworkforyou.com">TheyWorkForYou</a>, the only place where you can compare the policies of individual candidates and not just parties.
 
 ---------------------------
 

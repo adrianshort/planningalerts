@@ -1,11 +1,3 @@
----------------------------
-
-
-Election 2010: Why not take a look at the election quiz from our friends at http://TheyWorkForYou.com, the only place where you can compare the policies of individual candidates and not just parties.
-
-
----------------------------
-
 
 {foreach name="applications" from="$applications" item="application"}
 {$application->address|upper} {$application->postcode|upper} ({$application->council_reference|upper})

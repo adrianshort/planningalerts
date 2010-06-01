@@ -5,6 +5,7 @@
         </fieldset>
         <div class="attention">
             <h3>Thanks, your alert has been activated</h3>
+	    <!--
             <div class="ad">
                 
                 <h4>Help make the 20010 Election the most transparent ever</h4>
@@ -13,6 +14,7 @@
                 </p>
                 
             </div>
+	    -->
             <p>
                 You will now receive email alerts for any planning applications we find near <strong>{$postcode|upper}</strong> (within approximately {$alert_area_size}m). If this alert doesn't cover everywhere you are interested in <span class="highlight"><a href="/">you can sign up for multiple alerts</a></span>
             </p>

@@ -76,6 +76,15 @@ if [ -a $BACKUP_DIRECTORY/docs/.htaccess ];
     echo "No .htaccess to put back";
 fi;
 
+# Copy the backup.gz file back to docs
+
+if [ -a $BACKUP_DIRECTORY/docs/backup.gz ];
+  then
+    echo "Copying back backup.gz";
+    cp $BACKUP_DIRECTORY/docs/backup.gz $PLANNING_ROOT/docs/;
+  else
+    echo "No backup.gz to put back";
+fi;
 
 # Now make all the files group writable
 echo "Making the planningalerts root directory group writable."

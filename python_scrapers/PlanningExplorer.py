@@ -4,7 +4,7 @@ import urlparse
 import cgi
 import re
 import datetime
-
+import BeautifulSoup
 
 import cookielib
 
@@ -13,9 +13,130 @@ cookie_jar = cookielib.CookieJar()
 
 from BeautifulSoup import BeautifulSoup
 
-from PlanningUtils import PlanningApplication, \
-    PlanningAuthorityResults, \
-    getPostcodeFromText
+__auth__ = None
+
+import re
+
+date_format = "%d/%m/%Y"
+
+def fixNewlines(text):
+    # This can be used to sort out windows newlines
+    return text.replace("\r\n","\n")
+
+# So what can a postcode look like then?
+# This list of formats comes from http://www.mailsorttechnical.com/frequentlyaskedquestions.cfm
+#AN NAA         M1 1AA
+#ANN NAA        M60 1NW
+#AAN NAA        CR2 6XH
+#AANN NAA       DN55 1PT
+#ANA NAA        W1A 1HP
+#AANA NAA       EC1A 1BB
+
+postcode_regex = re.compile("[A-Z][A-Z]?\d(\d|[A-Z])? ?\d[A-Z][A-Z]")
+
+def getPostcodeFromText(text, default_postcode="No Postcode"):
+    """This function takes a piece of text and returns the first
+    bit of it that looks like a postcode."""
+
+    postcode_match = postcode_regex.search(text)
+
+    return postcode_match.group() if postcode_match else default_postcode
+
+
+class PlanningAuthorityResults:
+    """This class represents a set of results of a planning search.
+
+       This should probably be separated out so that it can be used for
+       authorities other than Cherwell.
+       """
+
+    def __init__(self, authority_name, authority_short_name):
+        self.authority_name = authority_name
+        self.authority_short_name = authority_short_name
+
+        # this will be a list of PlanningApplication objects
+        self.planning_applications = []
+
+
+    def addApplication(self, application):
+        self.planning_applications.append(application)
+
+    def __repr__(self):
+        return self.displayXML()
+
+    def displayXML(self):
+        """This should display the contents of this object in the planningalerts format.
+           i.e. in the same format as this one:
+           http://www.planningalerts.com/lambeth.xml
+           """
+
+        applications_bit = "".join([x.displayXML() for x in self.planning_applications])
+
+        return u"""<?xml version="1.0" encoding="UTF-8"?>\n""" + \
+            u"<planning>\n" +\
+            u"<authority_name>%s</authority_name>\n" %self.authority_name +\
+            u"<authority_short_name>%s</authority_short_name>\n" %self.authority_short_name +\
+            u"<applications>\n" + applications_bit +\
+            u"</applications>\n" +\
+            u"</planning>\n"
+
+
+
+class PlanningApplication:
+    def __init__(self):
+        self.council_reference = None
+        self.address = None
+        self.postcode = None
+        self.description = None
+        self.info_url = None
+        self.comment_url = None
+
+        # expecting this as a datetime.date object
+        self.date_received = None
+
+        # If we can get them, we may as well include OSGB.
+        # These will be the entirely numeric version.
+        self.osgb_x = None
+        self.osgb_y = None
+
+    def __repr__(self):
+        return self.displayXML()
+
+    def is_ready(self):
+        # This method tells us if the application is complete
+        # Because of the postcode default, we can't really
+        # check the postcode - make sure it is filled in when
+        # you do the address.
+        return self.council_reference \
+            and self.address \
+            and self.description \
+            and self.info_url \
+            and self.comment_url \
+            and self.date_received
+
+
+    def displayXML(self):
+        #print self.council_reference, self.address, self.postcode, self.description, self.info_url, self.comment_url, self.date_received
+
+        if not self.postcode:
+            self.postcode = getPostcodeFromText(self.address)
+
+        contents = [
+            u"<council_reference><![CDATA[%s]]></council_reference>" %(self.council_reference),
+            u"<address><![CDATA[%s]]></address>" %(self.address),
+            u"<postcode><![CDATA[%s]]></postcode>" %self.postcode,
+            u"<description><![CDATA[%s]]></description>" %(self.description),
+            u"<info_url><![CDATA[%s]]></info_url>" %(self.info_url),
+            u"<comment_url><![CDATA[%s]]></comment_url>" %(self.comment_url),
+            u"<date_received><![CDATA[%s]]></date_received>" %self.date_received.strftime(date_format),
+            ]
+        if self.osgb_x:
+            contents.append(u"<osgb_x>%s</osgb_x>" %(self.osgb_x))
+        if self.osgb_y:
+            contents.append(u"<osgb_y>%s</osgb_y>" %(self.osgb_y))
+
+        return u"<application>\n%s\n</application>" %('\n'.join(contents))
+
 
 # Date format to enter into search boxes
 date_format = "%d/%m/%Y"
@@ -26,19 +147,19 @@ app_code_regex = re.compile("PARAM0=(\d*)")
 
 
 class PlanningExplorerParser:
-    # If this authority doesn't have a comments page, 
-    # then set this email_address to an address for the 
+    # If this authority doesn't have a comments page,
+    # then set this email_address to an address for the
     # planning department, and it will be used in lieu of
     # a comments url.
     comments_email_address = None
 
     # These are the directories where the info urls, and search urls,
-    # usually live underneath the base_url. 
+    # usually live underneath the base_url.
     # If these are different for a particular
     # authority, then they can be overridden in a subclass.
     info_url_path = "MVM/Online/Generic/"
     search_url_path = "MVM/Online/PL/GeneralSearch.aspx"
-    
+
     # This is the most common place for comments urls to live
     # The %s will be filled in with an application code
     comments_path = "MVM/Online/PL/PLComments.aspx?pk=%s"
@@ -102,10 +223,10 @@ class PlanningExplorerParser:
 
     def _getHeaders(self):
         """If the authority requires any headers for the post request,
-        override this method returning a dictionary of header key to 
+        override this method returning a dictionary of header key to
         header value."""
         headers = {}
-        
+
         if self.use_firefox_user_agent:
             headers["User-Agent"] = "Mozilla/5.0 (X11; U; Linux i686; en-GB; rv:1.8.1.10) Gecko/20071126 Ubuntu/7.10 (gutsy) Firefox/2.0.0.10"
 
@@ -123,8 +244,8 @@ class PlanningExplorerParser:
         for PlanningExplorer sites. It won't work for all of them, so
         will sometimes need to be overridden in a subclass.
 
-        The parameter edrDateSelection is often not needed. 
-        It is needed by Charnwood though, so I've left it in 
+        The parameter edrDateSelection is often not needed.
+        It is needed by Charnwood though, so I've left it in
         to keep things simple.
         """
         year_month_day = search_date.timetuple()[:3]
@@ -138,7 +259,7 @@ class PlanningExplorerParser:
                 ("csbtnSearch", "Search"),
                 ("cboNumRecs", "99999"),
                 ))
-        
+
         return post_data
 
 
@@ -150,22 +271,22 @@ class PlanningExplorerParser:
             address = address_td.div.string
         else:
             address = address_td.string
-            
+
         return address
 
 
     def _getPostCode(self, info_soup):
-        """In most cases, the postcode can be got from the address in 
+        """In most cases, the postcode can be got from the address in
         the results table. Some councils put the address there without the
         postcode. In this case we will have to go to the info page to get
         the postcode. This should be done by overriding this method with
         one that parses the info page."""
 
         return getPostcodeFromText(self._current_application.address)
-        
+
     def _getDescription(self, tds, info_soup):
         description_td = tds[self.description_td_no]
-        
+
         if description_td.div is not None:
             # Mostly this is in a div
             # Use the empty string if the description is missing
@@ -190,7 +311,7 @@ class PlanningExplorerParser:
 
         self.search_url = urlparse.urljoin(base_url, self.search_url_path)
         self.info_url_base = urlparse.urljoin(self.base_url, self.info_url_path)
-    
+
         self.debug = debug
 
         self._results = PlanningAuthorityResults(self.authority_name, self.authority_short_name)
@@ -217,7 +338,7 @@ class PlanningExplorerParser:
         # The post data needs to be different for different councils
         # so we have a method on each council's scraper to make it.
         post_data = self._getPostData(asp_args, search_date)
-        
+
         headers = self._getHeaders()
 
         request = urllib2.Request(self.search_url, post_data, headers)
@@ -250,7 +371,7 @@ class PlanningExplorerParser:
                 self._current_application = PlanningApplication()
 
                 # There is no need to search for the date_received, it's what
-                # we searched for            
+                # we searched for
                 self._current_application.date_received = search_date
 
                 tds = tr.findAll("td")
@@ -265,7 +386,7 @@ class PlanningExplorerParser:
                 if self.fetch_info_page:
                     # We need to quote the spaces in the info url
                     info_request = urllib2.Request(urllib.quote(self._current_application.info_url, ":/&?="))
-                    
+
                     info_soup = BeautifulSoup(urllib2.urlopen(info_request))
                 else:
                     info_soup = None
@@ -372,7 +493,7 @@ class CreweParser(PlanningExplorerParser):
 
     info_url_path = "Northgate/PlanningExplorer/Generic/"
     search_url_path = "northgate/planningexplorer/generalsearch.aspx"
-    
+
     results_table_attrs = {"class": "display_table"}
 
     def _getPostData(self, asp_args, search_date):
@@ -433,13 +554,13 @@ class HackneyParser(PlanningExplorerParser):
         real_url_tuple = urlparse.urlsplit(response.geturl())
 
         query_string = real_url_tuple[3]
-        
+
         # Get the query as a list of key, value pairs
         parsed_query_list = list(cgi.parse_qsl(query_string))
 
         # Go through the query string replacing any PS parameters
         # with PS=99999
-        
+
         for i in range(len(parsed_query_list)):
             key, value = parsed_query_list[i]
 
@@ -448,10 +569,10 @@ class HackneyParser(PlanningExplorerParser):
                 parsed_query_list[i] = (key, value)
 
         new_query_string = urllib.urlencode(parsed_query_list)
-        
+
         new_url_tuple = real_url_tuple[:3] + (new_query_string,) + real_url_tuple[4:]
-        
-        new_url = urlparse.urlunsplit(new_url_tuple)        
+
+        new_url = urlparse.urlunsplit(new_url_tuple)
         new_request = urllib2.Request(new_url, None, self._getHeaders())
         new_response = urllib2.urlopen(new_request)
 
@@ -486,13 +607,13 @@ class HackneyParser(PlanningExplorerParser):
 
 class KennetParser(BroadlandLike, PlanningExplorerParser):
     comments_path = "Northgate/PlanningExplorer/PLComments.aspx?pk=%s"
-    
+
 class LincolnParser(PlanningExplorerParser):
     use_firefox_user_agent = True
     use_referer = True
 
     results_table_attrs = {"class": "display_table"}
-    
+
     search_url_path = "northgate/planningexplorer/generalsearch.aspx"
     info_url_path = "Northgate/PlanningExplorer/Generic/"
 
@@ -574,6 +695,40 @@ class MertonParser(PlanningExplorerParser):
 
 class ShrewsburyParser(PlanningExplorerParser):
     use_firefox_user_agent = True
+    
+class BirminghamParser(PlanningExplorerParser):
+    search_url_path = "PlanningExplorer/GeneralSearch.aspx"
+    info_url_path = "PlanningExplorer/Generic/"
+    comments_path = "PlanningExplorer/PLComments.aspx?pk=%s"
+    
+    use_firefox_user_agent = True
+    use_referer = True
+
+    results_table_attrs = {"class": "display_table"}
+
+    def _getPostData(self, asp_args, search_date):
+        post_data = urllib.urlencode(asp_args + (
+                ("txtApplicationNumber", ""),
+                ("cboApplicationTypeCode", ""),
+                ("txtSiteAddress", ""),
+                ("txtProposal", ""),
+                ("cboWardCode", ""),
+                ("cboConstituencyCode", ""),
+                ("txtApplicantName", ""),
+                ("txtAgentName", ""),
+                ("cboDevelopmentTypeCode", ""),
+                ("cboSelectDateValue", "DATE_REGISTERED"),
+                ("cboMonths", "1"),
+                ("cboDays", "10"),
+                ("rbGroup", "rbRange"),
+                ("dateStart", search_date.strftime(date_format)),
+                ("dateEnd", search_date.strftime(date_format)),
+                ("edrDateSelection", ""),
+                ("csbtnSearch", "Search"),
+                )
+                                     )
+
+        return post_data
 
 class SouthNorfolkParser(PlanningExplorerParser):
     use_firefox_user_agent = True
@@ -596,7 +751,7 @@ class SouthShropshireParser(PlanningExplorerParser):
                 ("cboNumRecs", "99999"),
                 ("csbtnSearch", "Search"),
                 ))
-        
+
         return post_data
 
 class SouthTynesideParser(BroadlandLike, PlanningExplorerParser):
@@ -713,11 +868,11 @@ class MendipParser(BroadlandLike, PlanningExplorerParser):
 if __name__ == '__main__':
     # NOTE - 04/11/2007 is a sunday
     # I'm using it to test that the scrapers behave on days with no apps.
-    
+
 #    parser = BlackburnParser("Blackburn With Darwen Borough Council", "Blackburn", "http://195.8.175.6/")
 #    parser = BroadlandParser("Broadland Council", "Broadland", "http://www.broadland.gov.uk/")
 #    parser = CamdenParser("London Borough of Camden", "Camden", "http://planningrecords.camden.gov.uk/")
-    parser = CharnwoodParser("Charnwood Borough Council", "Charnwood", "http://portal.charnwoodbc.gov.uk/")
+#    parser = CharnwoodParser("Charnwood Borough Council", "Charnwood", "http://portal.charnwoodbc.gov.uk/")
 #    parser = CreweParser("Crewe and Nantwich Borough Council", "Crewe and Nantwich", "http://portal.crewe-nantwich.gov.uk/")
 #    parser = EastStaffsParser("East Staffordshire Borough Council", "East Staffs", "http://www2.eaststaffsbc.gov.uk/")
 #    parser = EppingForestParser("Epping Forest District Council", "Epping Forest", "http://plan1.eppingforestdc.gov.uk/")
@@ -738,8 +893,9 @@ if __name__ == '__main__':
 #    parser = WalthamForestParser("Waltham Forest", "Waltham Forest", "http://planning.walthamforest.gov.uk/")
 #    parser = ConwyParser("Conwy County Borough Council", "Conwy", "http://www.conwy.gov.uk/")
 #    parser = MertonParser("London Borough of Merton", "Merton", "http://planning.merton.gov.uk")
-    parser = MendipParser("Mendip District Council", "Mendip", "http://planning.mendip.gov.uk/")
-    print parser.getResults(12, 6, 2009)
+#    parser = MendipParser("Mendip District Council", "Mendip", "http://planning.mendip.gov.uk/")
+    parser = BirminghamParser("Birmingham City Council", "Birmingham", "http://eplanning.birmingham.gov.uk/Northgate/")
+    print parser.getResults(27, 4, 2010)
 
 # To Do
 

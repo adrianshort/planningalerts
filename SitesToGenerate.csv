@@ -19,7 +19,7 @@
 "Bedford Borough Council","Bedford",,,,,,"http://www.publicaccess.bedford.gov.uk/publicaccess/tdc/","PublicAccess","PublicAccessParser",
 "Berwick-upon-Tweed Borough Council","Berwick",,,,,,,"Berwick","BerwickParser",
 "Bexley Council","Bexley",,,,,,"http://publicaccess.bexley.gov.uk/publicaccess/tdc/","PublicAccess","PublicAccessParser",
-"Birmingham City Council","Birmingham",,,,,,,"Birmingham","BirminghamParser",
+"Birmingham City Council","Birmingham",,,,,,"http://eplanning.birmingham.gov.uk/Northgate/","Birmingham","BirminghamParser",
 "Blaby District Council","Blaby",,,,,,"http://www.blaby.gov.uk/PublicAccess/tdc/","PublicAccess","PublicAccessParser",
 "Blackburn with Darwen Borough Council","Blackburn",,"http://duncan.devel.disruptiveproactivity.com/Blackburn.cgi?day={day}&month={month}&year={year}",1,,,"http://195.8.175.6/","PlanningExplorer","BlackburnParser",
 "Blackpool Borough Council","Blackpool",,,,,,"http://www2.blackpool.gov.uk/PlanningApplications/acolnetcgi.gov?ACTION=UNWRAP&RIPNAME=Root.pgesearch","AcolnetParser","BlackpoolParser",

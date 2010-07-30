@@ -273,6 +273,7 @@
 "Stevenage Borough Council","Stevenage",,,,,,"http://publicaccess.stevenage.gov.uk/publicaccess/tdc/","PublicAccess","PublicAccessParser",
 "St Helens Council","St Helens",,,,,,"http://212.248.225.150:8080/","ApplicationSearchServletParser","StHelensSearchParser",
 "Stirling Council","Stirling",,,,,,"http://planpub.stirling.gov.uk/publicaccess/tdc/","PublicAccess","PublicAccessParser",
+"Stoke on Trent City Council","Stoke",,,,,,"http://www.planning.stoke.gov.uk/dataonlineplanning/AcolNetCGI.exe?ACTION=UNWRAP&RIPNAME=Root.pgesearch","AcolnetParser","AcolnetParser",
 "Stockport Metropolitan Borough Council","Stockport",,,,,,"http://planning.stockport.gov.uk/PlanningData/AcolNetCGI.gov?ACTION=UNWRAP&RIPNAME=Root.pgesearch","AcolnetParser","AcolnetParser",
 "Stockton-On-Tees Borough Council","Stockton-On-Tees",,,,,,"http://www.developmentcontrol.stockton.gov.uk/publicaccess/tdc/","PublicAccess","PublicAccessParser",
 "Suffolk County Council","Suffolk",,,,,,"http://atrium.suffolkcc.gov.uk/ePlanning/loadResults.do","AtriumePlanning","AtriumePlanningParser",

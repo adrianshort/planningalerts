@@ -9,7 +9,7 @@
 "Aylesbury Vale District Council","Aylesbury Vale",,,,,,"http://eplanning.aylesburyvaledc.gov.uk/tdc/","PublicAccess","PublicAccessParser",
 "Babergh District Council","Babergh",,,,,,"http://planning.babergh.gov.uk/dcdatav2//acolnetcgi.gov?ACTION=UNWRAP&RIPNAME=Root.pgesearch","AcolnetParser","AcolnetParser",
 "London Borough of Barking and Dagenham","Barking and Dagenham",,,,,,"http://paweb.barking-dagenham.gov.uk/PublicAccess/tdc/","PublicAccess","PublicAccessParser",
-"London Borough of Barnet","Barnet",,"http://duncan.devel.disruptiveproactivity.com/Barnet.cgi?day={day}&month={month}&year={year}",1,,,"http://194.75.183.100/planning-cases/acolnetcgi.exe?ACTION=UNWRAP&RIPNAME=Root.pgesearch","AcolnetParser","AcolnetParser",
+"London Borough of Barnet","Barnet",,"http://cake.ukcod.org.uk/~duncan/Barnet.cgi?day={day}&month={month}&year={year}",1,,,"http://194.75.183.100/planning-cases/acolnetcgi.exe?ACTION=UNWRAP&RIPNAME=Root.pgesearch","AcolnetParser","AcolnetParser",
 "Barnsley Metropolitan Borough Council","Barnsley",,,,,,,"Barnsley","BarnsleyParser",
 "Barrow Borough Council","Barrow",,,,,,"http://localportal.barrowbc.gov.uk/","ApplicationSearchServletParser","BarrowSearchParser",
 "Basildon District Council","Basildon",,,,,,"http://planning.basildon.gov.uk/publicaccess/tdc/","PublicAccess","PublicAccessParser",

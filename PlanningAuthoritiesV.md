@@ -1,0 +1,4 @@
+|  | **Vale of Glamorgan** | Barry | one weekly list, and planning apps for whole year available as pdf | http://www.valeofglamorgan.gov.uk/living/planning/planning_applications/applications_register.aspx |
+|:-|:----------------------|:------|:-------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------|
+| Done  | Vale of White Horse   | Abingdon | PublicAccess                                                       | http://planning.whitehorsedc.gov.uk/publicaccess/mapping/map/map_detailview.aspx                   |
+| Done | Vale Royal            | Winsford | PublicAccess                                                       | http://pa.valeroyal.gov.uk/publicaccess/default.aspx                                               |

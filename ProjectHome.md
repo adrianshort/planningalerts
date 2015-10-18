@@ -1,0 +1,1 @@
+PlanningAlerts.com is a free service that searches as many local authority planning websites as it can find and emails people details of planning applications near them. The aim of this is to enable shared scrutiny of what is being built (and knocked down) in peoples communities.
